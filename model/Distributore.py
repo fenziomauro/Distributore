@@ -10,15 +10,19 @@ class Distributore:
 
 
     def aggiungiBevanda(self, codice, nome, prezzo): #Aggiunge una bevanda alla lista delle selezionabili
-        bevanda = Bibita(codice, nome , prezzo)
-        self.Bibite.append(bevanda)
-        print("Bevanda ", nome, " aggiunta con codice ", codice, " e prezzo", prezzo)
+        if prezzo >0:
+            bevanda = Bibita(codice, nome , prezzo)
+            self.Bibite.append(bevanda)
+            print("Bevanda ", nome, " aggiunta con codice ", codice, " e prezzo", prezzo)
+        else:
+            print("Il prezzo deve esser maggiore di zero")
 
 
     def getPrice(self, codiceBibita): #Dato un codiceBibita restituisce il prezzo della bibita se esiste
         for bibita in self.Bibite:
             if bibita.codice.lower() == codiceBibita.lower():
                 return(bibita.prezzo)
+
         else:
             return("Bevanda non valida")
 
@@ -32,6 +36,7 @@ class Distributore:
 
 
     def caricaTessera(self, codiceTessera, credito):  #Permette di aggiungere una tessera e un credito
+        if credito > 0:
             tessera = Tessera(codiceTessera,credito)
             for tes in self.Tesserati:
                 if tes.codice == codiceTessera:
@@ -39,7 +44,8 @@ class Distributore:
 
             else:
                 self.Tesserati.append(tessera)
-
+        else:
+            print("il credito deve esser maggiore di 0")
 
     def cancellaTessera(self, codiceTessera): #Cerca un codiceTessera e se esiste lo cancella
         for tessera in self.Tesserati:
@@ -50,20 +56,23 @@ class Distributore:
     def leggiCredito(self, codiceTessera ): #Dato un ID tessera restituisce il credito presente. Se l'id esiste
         for tessera in self.Tesserati:
             if tessera.codice == codiceTessera:
-                    return (tessera.credito)
+                return (tessera.credito)
+                break
+        else:
+            return ("Tessera non esistente")
 
     def aggiornaColonna(self,colonna, bibita, lattine): #Permette di aggiungere una colonna con il quantitativo e la descrizione di bevande
         storage = Colonna(colonna, bibita, lattine)
         for col in self.Colonne:
-            if col.numero == colonna:
-                self.cancellaColonna(colonna) #Se la colonna esiste già la cancella per ricrearla
+            if col.numero == int(colonna):
+                self.cancellaColonna(col.numero) #Se la colonna esiste già la cancella per ricrearla
         else:
             self.Colonne.append(storage)
 
 
     def normalizzaColonne(self): #Porta a zero tutte le colonne che hanno un numero negativo di lattine
         for colonna in self.Colonne:
-            if colonna.lattine <= 0:
+            if int(colonna.lattine) <= 0:
                 colonna.lattine = 0
 
     def cancellaColonna(self, numeroColonna): #Controlla che numero colonna esiste e lo cancella
@@ -104,9 +113,9 @@ class Distributore:
                     for lattina in self.Colonne:
                         if lattina.bibita == nome and lattina.lattine > 0:
                             if(credito>prezzo):
-                                credito = credito - prezzo
+                                credito =round(credito - prezzo, 2)
                                 lattina.lattine=lattina.lattine-1
-                                print("La lattina che hai scelto costa", prezzo,"è stata erogata dalla colonna", lattina.numero, "il credito finale della tesssera", codiceTessera, " è:", credito)
+                                print("Hai scelto una lattina di", nome,"il cui costo è: ", prezzo,"è stata erogata dalla colonna", lattina.numero, "il credito finale della tesssera", codiceTessera, " è:", credito)
                                 self.cancellaTessera(codiceTessera)
                                 self.cancellaColonna(lattina.numero)
                                 self.caricaTessera(codiceTessera, credito)
